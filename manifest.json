@@ -1,0 +1,30 @@
+{
+    "name": "Derin's Dark Mode Extension",
+    "description": "tired of the web store ones not working",
+    "host_permissions": ["*://*/*"],
+    "permissions": ["tabs", "storage", "scripting", "commands"],
+    "icons": {
+        "128": "/icon.png"
+    },
+    "action": {
+        "default_popup": "/popup/popup.html"
+    },
+    "background": { "service_worker": "/worker.js" },
+    "content_scripts": [{
+        "all_frames": true,
+        "js": ["/injected.js"],
+        "css": ["/injected.css"],
+        "matches": ["*://*/*"],
+        "run_at": "document_start"
+    }],
+    "commands": {
+        "toggle-site": {
+            "suggested_key": {
+                "default": "Alt+D"
+            },
+            "description": "Toggle the current site."
+        }
+    },
+    "version": "0.0.1",
+    "manifest_version": 3
+}

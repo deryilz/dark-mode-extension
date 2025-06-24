@@ -1,0 +1,14 @@
+html.derin-dark {
+    filter: invert(1) !important;
+}
+
+html.derin-dark-transparent body {
+    background-color: white !important;
+}
+
+html.derin-dark img,
+html.derin-dark iframe,
+html.derin-dark object,
+html.derin-dark video {
+    filter: invert(1) !important;
+}
