@@ -22,7 +22,7 @@
             "suggested_key": {
                 "default": "Alt+D"
             },
-            "description": "Toggle the current site."
+            "description": "Toggle the current site"
         }
     },
     "version": "1.0.0",
