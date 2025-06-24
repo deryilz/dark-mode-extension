@@ -1,16 +1,34 @@
-function applyStatus(enabled) {
-    let rootElement = document.documentElement
+const DARK_CLASS = "derin-dark"
+const DARK_TRANSPARENT_CLASS = "derin-dark-transparent"
+
+let cachedStatus = false
+let isFullScreen = false
+
+document.addEventListener("fullscreenchange", () => {
+    isFullScreen = Boolean(document.fullscreenElement)
+
+    if (isFullScreen) {
+        applyStatus(false, false)
+    } else {
+        applyStatus(cachedStatus)
+    }
+})
+
+function applyStatus(enabled, cache = true) {
+    if (cache) cachedStatus = enabled
+    if (cache && isFullScreen) return
+
+    let rootClasses = document.documentElement.classList
 
     if (enabled) {
-        rootElement.classList.add("derin-dark")
-
         let color = getComputedStyle(document.body).backgroundColor
         if (["transparent", "rgba(0, 0, 0, 0)"].includes(color)) {
-            rootElement.classList.add("derin-dark-transparent")
+            rootClasses.add(DARK_TRANSPARENT_CLASS)
         }
+        rootClasses.add(DARK_CLASS)
     } else {
-        rootElement.classList.remove("derin-dark")
-        rootElement.classList.remove("derin-dark-transparent")
+        rootClasses.remove(DARK_CLASS)
+        rootClasses.remove(DARK_TRANSPARENT_CLASS)
     }
 }
 
