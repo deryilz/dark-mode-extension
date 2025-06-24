@@ -33,6 +33,7 @@ async function init() {
     }
 
     checkbox.checked = await getEnabled(hostname)
+    checkbox.focus()
 
     domainName.textContent = hostname
     checkbox.addEventListener("click", () => onCheckboxClick(hostname))
