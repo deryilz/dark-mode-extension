@@ -38,15 +38,14 @@ chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (r
         return
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        if (!document.body) {
-            // shouldn't happen
-            console.warn("No body, quitting...")
-            return
+    let observer = new MutationObserver(() => {
+        if (document.body) {
+            applyStatus(response.enabled)
+            observer.disconnect();
         }
+    });
 
-        applyStatus(response.enabled)
-    })
+    observer.observe(document.documentElement, { childList: true });
 })
 
 chrome.runtime.onMessage.addListener((req) => {
