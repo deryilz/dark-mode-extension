@@ -33,7 +33,20 @@ function applyStatus(enabled, cache = true) {
 }
 
 chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (response) => {
-    applyStatus(response.enabled)
+    if (document.body) {
+        applyStatus(response.enabled)
+        return
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!document.body) {
+            // shouldn't happen
+            console.warn("No body, quitting...")
+            return
+        }
+
+        applyStatus(response.enabled)
+    })
 })
 
 chrome.runtime.onMessage.addListener((req) => {
