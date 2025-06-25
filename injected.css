@@ -6,9 +6,12 @@ html.derin-dark-transparent body {
     background-color: white !important;
 }
 
+/* some best-effort exceptions */
 html.derin-dark img,
 html.derin-dark iframe,
 html.derin-dark object,
-html.derin-dark video {
+html.derin-dark video,
+html.derin-dark [style*="background-image:"],
+html.derin-dark [style*="background:"][style*="url("] {
     filter: invert(1) !important;
 }

@@ -34,6 +34,13 @@ function applyStatus(enabled, cache = true) {
 
 function enforceCache() {
     let observer = new MutationObserver(mutations => {
+        // during an extension update, two content scripts will be loaded on the same page at once
+        // this disconnects the old one, so that no infinite loop will happen
+        if (!chrome.runtime?.id) {
+            observer.disconnect()
+            return
+        }
+
         for (let mutation of mutations) {
             if (mutation.attributeName === 'class'
                 && mutation.target.classList.contains(DARK_CLASS) !== cachedStatus
