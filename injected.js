@@ -32,6 +32,25 @@ function applyStatus(enabled, cache = true) {
     }
 }
 
+function enforceCache() {
+    let observer = new MutationObserver(mutations => {
+        for (let mutation of mutations) {
+            if (mutation.attributeName === 'class'
+                && mutation.target.classList.contains(DARK_CLASS) !== cachedStatus
+                && !isFullScreen) {
+                applyStatus(cachedStatus)
+            }
+        }
+    });
+
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+    });
+}
+
+enforceCache()
+
 chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (response) => {
     if (document.body) {
         applyStatus(response.enabled)
