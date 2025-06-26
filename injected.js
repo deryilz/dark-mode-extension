@@ -18,6 +18,8 @@ function applyStatus(enabled, cache = true) {
     if (cache) cachedStatus = enabled
     if (cache && isFullScreen) return
 
+    if (document.contentType !== "text/html") return
+
     let rootClasses = document.documentElement.classList
 
     if (enabled) {
