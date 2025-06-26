@@ -11,6 +11,8 @@ html.derin-dark img,
 html.derin-dark iframe,
 html.derin-dark object,
 html.derin-dark video,
+html.derin-dark embed,
+html.derin-dark frame,
 html.derin-dark [style*="background-image:"],
 html.derin-dark [style*="background:"][style*="url("] {
     filter: invert(1) !important;
