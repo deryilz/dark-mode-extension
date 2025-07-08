@@ -4,15 +4,20 @@ const DARK_TRANSPARENT_CLASS = "derin-dark-transparent"
 let cachedStatus = false
 let isFullScreen = false
 
-document.addEventListener("fullscreenchange", () => {
+function onFullScreenChange() {
     isFullScreen = Boolean(document.fullscreenElement)
+
+    console.log({ cachedStatus, isFullScreen })
 
     if (isFullScreen) {
         applyStatus(false, false)
     } else {
         applyStatus(cachedStatus)
     }
-})
+}
+
+document.addEventListener("fullscreenchange", onFullScreenChange)
+window.addEventListener("resize", onFullScreenChange)
 
 function applyStatus(enabled, cache = true) {
     if (cache) cachedStatus = enabled
