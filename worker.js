@@ -60,6 +60,8 @@ chrome.commands.onCommand.addListener((command, tab) => {
         if (!tab) return
 
         let hostname = new URL(tab.url).hostname
+        if (!hostname) return
+
         getEnabled(hostname).then((enabled) => {
             setEnabled(hostname, !enabled)
             notifyTabs(hostname, !enabled)
