@@ -7,8 +7,6 @@ let isFullScreen = false
 function onFullScreenChange() {
     isFullScreen = Boolean(document.fullscreenElement)
 
-    console.log({ cachedStatus, isFullScreen })
-
     if (isFullScreen) {
         applyStatus(false, false)
     } else {
