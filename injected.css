@@ -2,7 +2,10 @@ html.derin-dark {
     filter: invert(1) !important;
 }
 
-html.derin-dark-transparent body {
+html.derin-dark-transparent body,
+html.derin-dark iframe,
+html.derin-dark frame,
+html.derin-dark embed {
     background-color: white !important;
 }
 
