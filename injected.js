@@ -53,17 +53,23 @@ function enforceCache() {
                 applyStatus(cachedStatus)
             }
         }
-    });
+    })
 
     observer.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['class'],
-    });
+    })
 }
 
 enforceCache()
 
 chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (response) => {
+    // temporary fix for google.com
+    if (location.hostname === "www.google.com"
+        && document.querySelector('meta[name=color-scheme]')?.content !== "dark light") {
+        response.enabled = true
+    }
+
     if (document.body) {
         applyStatus(response.enabled)
         return
@@ -72,11 +78,11 @@ chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (r
     let observer = new MutationObserver(() => {
         if (document.body) {
             applyStatus(response.enabled)
-            observer.disconnect();
+            observer.disconnect()
         }
     });
 
-    observer.observe(document.documentElement, { childList: true });
+    observer.observe(document.documentElement, { childList: true })
 })
 
 chrome.runtime.onMessage.addListener((req) => {
