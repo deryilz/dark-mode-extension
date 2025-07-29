@@ -66,7 +66,7 @@ enforceCache()
 chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (response) => {
     // temporary fix for google.com
     if (location.hostname === "www.google.com"
-        && location.pathname === "/"
+        && ["/", "/search"].contains(location.pathname)
         && document.querySelector('meta[name=color-scheme]')?.content !== "dark light") {
         response.enabled = true
     }
