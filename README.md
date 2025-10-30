@@ -1,3 +1,5 @@
+# Derin's Dark Mode Extension
+
 To install:
 
 - Turn on dev mode in chrome://extensions
