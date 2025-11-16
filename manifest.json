@@ -1,6 +1,6 @@
 {
     "name": "Derin's Dark Mode Extension",
-    "description": "tired of the web store ones not working",
+    "description": "A very basic whitelist-based dark mode extension.",
     "host_permissions": ["*://*/*"],
     "permissions": ["tabs", "storage", "scripting", "commands"],
     "icons": {
