@@ -1,12 +1,6 @@
 # Derin's Dark Mode Extension
 
-To install:
-
-- Turn on dev mode in chrome://extensions
-- Download the zip file from the GitHub releases and drag it into the chrome://extensions page
-- Installed!
-
-(These steps are necessary because the extension isn't on the web store right now. Maybe I will upload it eventually.)
+Now on the Chrome Web Store! [Extension link](https://chromewebstore.google.com/detail/derins-dark-mode-extensio/jpjefolfdeankiloknnhfglcpcpbiead)
 
 To use:
 
