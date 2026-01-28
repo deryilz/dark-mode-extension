@@ -10,14 +10,14 @@ html.derin-dark embed {
 }
 
 /* some best-effort exceptions */
-html.derin-dark img,
-html.derin-dark iframe[src],
-html.derin-dark object,
-html.derin-dark video,
-html.derin-dark embed,
-html.derin-dark frame,
-html.derin-dark svg,
-html.derin-dark [style*="background-image:"],
-html.derin-dark [style*="background:"][style*="url("] {
+html.derin-dark:not(.derin-dark-total) img,
+html.derin-dark:not(.derin-dark-total) iframe[src],
+html.derin-dark:not(.derin-dark-total) object,
+html.derin-dark:not(.derin-dark-total) video,
+html.derin-dark:not(.derin-dark-total) embed,
+html.derin-dark:not(.derin-dark-total) frame,
+html.derin-dark:not(.derin-dark-total) svg,
+html.derin-dark:not(.derin-dark-total) [style*="background-image:"],
+html.derin-dark:not(.derin-dark-total) [style*="background:"][style*="url("] {
     filter: invert(1) !important;
 }

@@ -13,5 +13,6 @@ Features:
 - The dark mode is just reverse contrast, ignoring images and iframes
 - Occasionally transparent images might be hard to see, but this is an unsolvable problem
 - Correctly handles full screen inversion unlike most extensions online
+- Now has the choice to fully invert sites including images, if you want
 
 The goal here is making something simple that works well.

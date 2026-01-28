@@ -1,7 +1,8 @@
 const DARK_CLASS = "derin-dark";
+const DARK_TOTAL_CLASS = "derin-dark-total";
 const DARK_TRANSPARENT_CLASS = "derin-dark-transparent";
 
-let cachedStatus = false;
+let cachedStatus = "off";
 let isFullScreen = false;
 
 function onFullScreenChange() {
@@ -17,23 +18,24 @@ function onFullScreenChange() {
 document.addEventListener("fullscreenchange", onFullScreenChange);
 window.addEventListener("resize", onFullScreenChange);
 
-function applyStatus(enabled, cache = true) {
-    if (cache) cachedStatus = enabled;
+function applyStatus(status, cache = true) {
+    if (cache) cachedStatus = status;
     if (cache && isFullScreen) return;
 
     if (document.contentType !== "text/html") return;
 
     let rootClasses = document.documentElement.classList;
 
-    if (enabled) {
+    if (status === "off") {
+        rootClasses.remove(DARK_CLASS);
+        rootClasses.remove(DARK_TRANSPARENT_CLASS);
+    } else {
         let color = getComputedStyle(document.body).backgroundColor;
         if (["transparent", "rgba(0, 0, 0, 0)"].includes(color)) {
             rootClasses.add(DARK_TRANSPARENT_CLASS);
         }
         rootClasses.add(DARK_CLASS);
-    } else {
-        rootClasses.remove(DARK_CLASS);
-        rootClasses.remove(DARK_TRANSPARENT_CLASS);
+        rootClasses.toggle(DARK_TOTAL_CLASS, status === "total");
     }
 }
 
@@ -47,9 +49,10 @@ function enforceCache() {
         }
 
         for (let mutation of mutations) {
+            let enabled = cachedStatus !== "off";
             if (
-                mutation.attributeName === 'class' &&
-                mutation.target.classList.contains(DARK_CLASS) !== cachedStatus &&
+                mutation.attributeName === "class" &&
+                mutation.target.classList.contains(DARK_CLASS) !== enabled &&
                 !isFullScreen
             ) {
                 applyStatus(cachedStatus);
@@ -59,7 +62,7 @@ function enforceCache() {
 
     observer.observe(document.documentElement, {
         attributes: true,
-        attributeFilter: ['class'],
+        attributeFilter: ["class"],
     });
 }
 
@@ -67,20 +70,22 @@ enforceCache();
 
 chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (response) => {
     // temporary fix for google.com
-    if (location.hostname === "www.google.com"
-        && ["/", "/search"].includes(location.pathname)
-        && document.querySelector('meta[name=color-scheme]')?.content !== "dark light") {
-        response.enabled = true;
+    if (
+        location.hostname === "www.google.com" &&
+        ["/", "/search"].includes(location.pathname) &&
+        document.querySelector("meta[name=color-scheme]")?.content !== "dark light"
+    ) {
+        response.status = true;
     }
 
     if (document.body) {
-        applyStatus(response.enabled);
+        applyStatus(response.status);
         return;
     }
 
     let observer = new MutationObserver(() => {
         if (document.body) {
-            applyStatus(response.enabled);
+            applyStatus(response.status);
             observer.disconnect();
         }
     });

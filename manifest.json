@@ -18,13 +18,16 @@
         "run_at": "document_start"
     }],
     "commands": {
-        "toggle-site": {
+        "set-dark": {
             "suggested_key": {
                 "default": "Alt+D"
             },
-            "description": "Toggle the current site"
+            "description": "Toggle darkening the current site"
+        },
+        "set-total": {
+            "description": "Toggle fully inverting the current site"
         }
     },
-    "version": "1.1.2",
+    "version": "1.2.0",
     "manifest_version": 3
 }

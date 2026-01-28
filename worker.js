@@ -1,39 +1,24 @@
 const STORAGE_KEY = "enabledHostnames";
 
-async function getEnabled(hostname) {
+// "off" | "dark" | "total"
+
+async function migrateStorage() {
     let storage = await chrome.storage.local.get(STORAGE_KEY);
-    let hostnames = storage[STORAGE_KEY] ?? {};
-    Object.setPrototypeOf(hostnames, null);
+    let hostnames = storage[STORAGE_KEY];
+    if (!hostnames) return;
 
-    return Boolean(hostnames[hostname]);
-}
-
-async function setEnabled(hostname, status) {
-    let storage = await chrome.storage.local.get(STORAGE_KEY);
-    let hostnames = storage[STORAGE_KEY] ?? {};
-    Object.setPrototypeOf(hostnames, null);
-
-    if (status) {
-        hostnames[hostname] = status;
-    } else {
-        delete hostnames[hostname];
+    for (let key of Object.keys(hostnames)) {
+        if (hostnames[key] === true) {
+            hostnames[key] = "dark";
+        }
     }
 
-    chrome.storage.local.set({ [STORAGE_KEY]: hostnames });
+    await chrome.storage.local.set({ [STORAGE_KEY]: hostnames });
 }
 
-async function notifyTabs(hostname, status) {
-    let tabs = await chrome.tabs.query({ url: "*://*/*", });
-    for (let tab of tabs) {
-        try {
-            chrome.tabs.sendMessage(tab.id, {
-                id: "update-style",
-                status,
-                hostname,
-            });
-        } catch (_) { }
-    }
-}
+chrome.runtime.onInstalled.addListener((details) => {
+    if (details.reason === "update") migrateStorage();
+});
 
 async function injectIntoEverything() {
     console.log("Just installed, so injecting into all tabs.");
@@ -55,30 +40,74 @@ async function injectIntoEverything() {
     }
 }
 
-chrome.commands.onCommand.addListener((command, tab) => {
-    if (command === "toggle-site") {
-        if (!tab) return;
+chrome.runtime.onInstalled.addListener(injectIntoEverything);
 
-        let hostname = new URL(tab.url).hostname;
-        if (!hostname) return;
+async function getStatus(hostname) {
+    let storage = await chrome.storage.local.get(STORAGE_KEY);
+    let hostnames = storage[STORAGE_KEY] ?? {};
+    Object.setPrototypeOf(hostnames, null);
 
-        getEnabled(hostname).then((enabled) => {
-            setEnabled(hostname, !enabled);
-            notifyTabs(hostname, !enabled);
-        });
+    return hostnames[hostname] ?? "off";
+}
+
+async function setStatus(hostname, status) {
+    let storage = await chrome.storage.local.get(STORAGE_KEY);
+    let hostnames = storage[STORAGE_KEY] ?? {};
+    Object.setPrototypeOf(hostnames, null);
+
+    if (status === "off") {
+        delete hostnames[hostname];
+    } else {
+        hostnames[hostname] = status;
     }
+
+    await chrome.storage.local.set({ [STORAGE_KEY]: hostnames });
+}
+
+async function notifyTabs(hostname, status) {
+    let tabs = await chrome.tabs.query({ url: "*://*/*", });
+    for (let tab of tabs) {
+        try {
+            chrome.tabs.sendMessage(tab.id, {
+                id: "update-style",
+                status,
+                hostname,
+            });
+        } catch (_) { }
+    }
+}
+
+chrome.commands.onCommand.addListener((command, tab) => {
+    if (!tab) return;
+
+    let mode;
+
+    if (command === "set-dark") {
+        mode = "dark";
+    } else if (command === "set-total") {
+        mode = "total";
+    } else {
+        return;
+    }
+
+    let hostname = new URL(tab.url).hostname;
+    if (!hostname) return;
+
+    getStatus(hostname).then((oldStatus) => {
+        let status = oldStatus === "off" ? mode : "off";
+        setStatus(hostname, status);
+        notifyTabs(hostname, status);
+    });
 });
 
-chrome.runtime.onMessage.addListener((req, sender, res) => {
+chrome.runtime.onMessage.addListener((req, _, res) => {
     if (req.id === "get-status") {
-        getEnabled(req.hostname).then((enabled) => res({ enabled }));
+        getStatus(req.hostname).then((status) => res({ status }));
         return true;
     }
 
     if (req.id === "set-status") {
-        setEnabled(req.hostname, req.status);
+        setStatus(req.hostname, req.status);
         notifyTabs(req.hostname, req.status);
     }
 });
-
-chrome.runtime.onInstalled.addListener(injectIntoEverything);

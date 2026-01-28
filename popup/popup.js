@@ -1,5 +1,5 @@
-let checkbox = document.getElementById("checkbox");
-let checkboxArea = document.getElementById("checkbox-area");
+let container = document.getElementById("container");
+let mode = document.getElementById("mode");
 let domainName = document.getElementById("domain-name");
 
 async function getCurrentHostname() {
@@ -12,31 +12,28 @@ async function getCurrentHostname() {
     return url.hostname;
 }
 
-function getEnabled(hostname) {
+function getStatus(hostname) {
     return new Promise((resolve) => {
         chrome.runtime.sendMessage({ id: "get-status", hostname }, (response) => {
-            resolve(response.enabled);
+            resolve(response.status);
         });
     });
-}
-
-function onCheckboxClick(hostname) {
-    let status = checkbox.checked;
-    chrome.runtime.sendMessage({ id: "set-status", hostname, status });
 }
 
 async function init() {
     let hostname = await getCurrentHostname();
     if (hostname === null) {
-        checkboxArea.style.display = "none";
+        container.style.display = "none";
         return;
     }
 
-    checkbox.checked = await getEnabled(hostname);
-    checkbox.focus();
-
+    mode.value = await getStatus(hostname);
     domainName.textContent = hostname;
-    checkbox.addEventListener("click", () => onCheckboxClick(hostname));
+
+    mode.addEventListener("change", () => {
+        let status = mode.value;
+        chrome.runtime.sendMessage({ id: "set-status", hostname, status });
+    });
 }
 
 init();
