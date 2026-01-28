@@ -9,7 +9,7 @@ function onFullScreenChange() {
     isFullScreen = Boolean(document.fullscreenElement);
 
     if (isFullScreen) {
-        applyStatus(false, false);
+        applyStatus("off", false);
     } else {
         applyStatus(cachedStatus);
     }
