@@ -9,7 +9,8 @@ function onFullScreenChange() {
     isFullScreen = Boolean(document.fullscreenElement);
 
     if (isFullScreen) {
-        applyStatus("off", false);
+        let status = cachedStatus === "total" ? "dark" : "off";
+        applyStatus(status, false);
     } else {
         applyStatus(cachedStatus);
     }
@@ -20,7 +21,7 @@ window.addEventListener("resize", onFullScreenChange);
 
 function applyStatus(status, cache = true) {
     if (cache) cachedStatus = status;
-    if (cache && isFullScreen) return;
+    if (cache && isFullScreen) return onFullScreenChange();
 
     if (document.contentType !== "text/html") return;
 
