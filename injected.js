@@ -23,7 +23,7 @@ function applyStatus(status, cache = true) {
     if (cache) cachedStatus = status;
     if (cache && isFullScreen) return onFullScreenChange();
 
-    if (document.contentType !== "text/html") return;
+    if (document.contentType !== "text/html" && !document.contentType.startsWith("image/")) return;
 
     let rootClasses = document.documentElement.classList;
 
