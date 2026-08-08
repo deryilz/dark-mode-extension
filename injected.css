@@ -1,5 +1,5 @@
-/* lowest priority, fixes transparent pages */
-:where(html) {
+/* lowest priority possible */
+:where(html.derin-dark-transparent) {
     background-color: white;
 }
 
@@ -7,7 +7,7 @@ html.derin-dark {
     filter: invert(1) !important;
 }
 
-html.derin-dark iframe[src],
+html.derin-dark iframe,
 html.derin-dark frame,
 html.derin-dark embed {
     background-color: white !important;

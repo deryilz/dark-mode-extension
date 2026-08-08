@@ -1,5 +1,6 @@
 const DARK_CLASS = "derin-dark";
 const DARK_TOTAL_CLASS = "derin-dark-total";
+const DARK_TRANSPARENT_CLASS = "derin-dark-transparent";
 
 let cachedStatus = "off";
 let isFullScreen = false;
@@ -28,7 +29,12 @@ function applyStatus(status, cache = true) {
 
     if (status === "off") {
         rootClasses.remove(DARK_CLASS);
+        rootClasses.remove(DARK_TRANSPARENT_CLASS);
     } else {
+        let color = getComputedStyle(document.body).backgroundColor;
+        if (color === "transparent" || color === "rgba(0, 0, 0, 0)") {
+            rootClasses.add(DARK_TRANSPARENT_CLASS);
+        }
         rootClasses.add(DARK_CLASS);
         rootClasses.toggle(DARK_TOTAL_CLASS, status === "total");
     }
