@@ -32,7 +32,7 @@ function applyStatus(status, cache = true) {
         rootClasses.remove(DARK_TRANSPARENT_CLASS);
     } else {
         let color = getComputedStyle(document.body).backgroundColor;
-        if (["transparent", "rgba(0, 0, 0, 0)"].includes(color)) {
+        if (color === "transparent" || color === "rgba(0, 0, 0, 0)") {
             rootClasses.add(DARK_TRANSPARENT_CLASS);
         }
         rootClasses.add(DARK_CLASS);
@@ -76,7 +76,7 @@ chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (r
         ["/", "/search"].includes(location.pathname) &&
         document.querySelector("meta[name=color-scheme]")?.content !== "dark light"
     ) {
-        response.status = true;
+        response.status = "dark";
     }
 
     if (document.body) {
