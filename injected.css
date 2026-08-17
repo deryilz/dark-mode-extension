@@ -1,5 +1,5 @@
 /* lowest priority possible */
-:where(html.derin-dark-transparent) {
+:where(html.derin-dark-transparent body) {
     background-color: white;
 }
 

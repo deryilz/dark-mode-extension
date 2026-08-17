@@ -26,17 +26,20 @@ function applyStatus(status, cache = true) {
     if (document.contentType !== "text/html" && !document.contentType.startsWith("image/")) return;
 
     let rootClasses = document.documentElement.classList;
+    let rootStyle = getComputedStyle(document.documentElement);
 
     if (status === "off") {
         rootClasses.remove(DARK_CLASS);
         rootClasses.remove(DARK_TRANSPARENT_CLASS);
     } else {
-        let color = getComputedStyle(document.body).backgroundColor;
-        if (color === "transparent" || color === "rgba(0, 0, 0, 0)") {
-            rootClasses.add(DARK_TRANSPARENT_CLASS);
-        }
+        let color = rootStyle.backgroundColor;
+        let image = rootStyle.backgroundImage;
+        let isTransparent = color === "transparent" || color === "rgba(0, 0, 0, 0)";
+        let hasNoImage = !image || image === "none";
+
         rootClasses.add(DARK_CLASS);
         rootClasses.toggle(DARK_TOTAL_CLASS, status === "total");
+        rootClasses.toggle(DARK_TRANSPARENT_CLASS, isTransparent && hasNoImage);
     }
 }
 
@@ -81,21 +84,49 @@ chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (r
 
     if (document.body) {
         applyStatus(response.status);
-        return;
+    } else {
+        let bodyObserver = new MutationObserver(() => {
+            if (document.body) {
+                applyStatus(response.status);
+                bodyObserver.disconnect();
+            }
+        });
+        bodyObserver.observe(document.documentElement, { childList: true });
     }
 
-    let observer = new MutationObserver(() => {
-        if (document.body) {
-            applyStatus(response.status);
-            observer.disconnect();
+    if (document.readyState !== "complete") {
+        window.addEventListener("DOMContentLoaded", () => applyStatus(cachedStatus));
+        window.addEventListener("load", () => applyStatus(cachedStatus));
+    }
+
+    let styleObserver = new MutationObserver((mutations) => {
+        if (!chrome.runtime?.id) {
+            styleObserver.disconnect();
+            return;
+        }
+
+        let update = false;
+        for (let mutation of mutations) {
+            for (let node of mutation.addedNodes) {
+                if (node.nodeName === "STYLE" || node.nodeName === "LINK") {
+                    update = true;
+                }
+            }
+        }
+
+        if (update) {
+            applyStatus(cachedStatus);
         }
     });
 
-    observer.observe(document.documentElement, { childList: true });
-})
+    styleObserver.observe(document.head || document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+});
 
 chrome.runtime.onMessage.addListener((req) => {
     if (req.id === "update-style" && req.hostname === location.hostname) {
         applyStatus(req.status);
     }
-})
+});
