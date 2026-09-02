@@ -26,20 +26,27 @@ function applyStatus(status, cache = true) {
     if (document.contentType !== "text/html" && !document.contentType.startsWith("image/")) return;
 
     let rootClasses = document.documentElement.classList;
-    let rootStyle = getComputedStyle(document.documentElement);
 
     if (status === "off") {
         rootClasses.remove(DARK_CLASS);
         rootClasses.remove(DARK_TRANSPARENT_CLASS);
     } else {
-        let color = rootStyle.backgroundColor;
-        let image = rootStyle.backgroundImage;
-        let isTransparent = color === "transparent" || color === "rgba(0, 0, 0, 0)";
-        let hasNoImage = !image || image === "none";
+        let transparent = true;
+        for (let element of [document.documentElement, document.body]) {
+            let style = getComputedStyle(element);
+            let color = style.backgroundColor;
+            let image = style.backgroundImage;
+            if (
+                color !== "transparent" && color !== "rgba(0, 0, 0, 0)" ||
+                image && image !== "none"
+            ) {
+                transparent = false;
+            }
+        }
 
         rootClasses.add(DARK_CLASS);
         rootClasses.toggle(DARK_TOTAL_CLASS, status === "total");
-        rootClasses.toggle(DARK_TRANSPARENT_CLASS, isTransparent && hasNoImage);
+        rootClasses.toggle(DARK_TRANSPARENT_CLASS, transparent);
     }
 }
 
