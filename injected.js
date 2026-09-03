@@ -37,7 +37,7 @@ function applyStatus(status, cache = true) {
             let color = style.backgroundColor;
             let image = style.backgroundImage;
             if (
-                color !== "transparent" && color !== "rgba(0, 0, 0, 0)" ||
+                !["transparent", "rgba(0, 0, 0, 0)", "rgb(255, 255, 255)"].includes(color) ||
                 image && image !== "none"
             ) {
                 transparent = false;
@@ -105,6 +105,11 @@ chrome.runtime.sendMessage({ id: "get-status", hostname: location.hostname }, (r
         window.addEventListener("DOMContentLoaded", () => applyStatus(cachedStatus));
         window.addEventListener("load", () => applyStatus(cachedStatus));
     }
+
+    let resizeObserver = new ResizeObserver(() => {
+        applyStatus(cachedStatus);
+    });
+    resizeObserver.observe(document.documentElement);
 
     let styleObserver = new MutationObserver((mutations) => {
         if (!chrome.runtime?.id) {
