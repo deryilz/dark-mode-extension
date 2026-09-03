@@ -1,4 +1,4 @@
-9{
+{
     "name": "Derin's Dark Mode Extension",
     "description": "A very basic whitelist-based dark mode extension.",
     "host_permissions": ["*://*/*"],
